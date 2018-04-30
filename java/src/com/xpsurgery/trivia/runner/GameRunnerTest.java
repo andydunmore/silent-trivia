@@ -50,8 +50,24 @@ public class GameRunnerTest {
     }
 
     @Test
-    public void correctWinnerFirstGame() {
+    public void correctWinnerFirstGame() throws IOException {
         String result = "Winner = Sue, purses = 6";
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        runGame(1, printStream);
+        BufferedReader gameReader = new BufferedReader(new StringReader(new String(baos.toByteArray())));
+
+        String lastLine = "";
+
+        String gameReaderLine = gameReader.readLine();
+        while (gameReaderLine != null) {
+            lastLine = gameReaderLine;
+            gameReaderLine = gameReader.readLine();
+        }
+
+        assertEquals(result, lastLine);
+
     }
 
     private static void runGame1000Times(PrintStream printStream) {
@@ -59,9 +75,9 @@ public class GameRunnerTest {
     }
 
     private static void runGame(int numberOfRuns, PrintStream printStream) {
-        try (PrintStream outputFile = printStream) {
+        try (PrintStream outputStream = printStream) {
             for (int seed = 0; seed < numberOfRuns; seed++) {
-                Game aGame = new Game(outputFile);
+                Game aGame = new Game(outputStream);
                 aGame.add("Chet");
                 aGame.add("Pat");
                 aGame.add("Sue");
