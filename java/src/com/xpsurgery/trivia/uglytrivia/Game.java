@@ -1,5 +1,7 @@
 package com.xpsurgery.trivia.uglytrivia;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -14,9 +16,12 @@ public class Game {
   LinkedList rockQuestions = new LinkedList();
   int currentPlayer = 0;
   boolean isGettingOutOfPenaltyBox;
+  private PrintStream outputStream;
 
-  public  Game(){
-    for (int i = 0; i < 50; i++) {
+
+  public  Game(PrintStream outStream){
+    this.outputStream = outStream;
+  	for (int i = 0; i < 50; i++) {
       popQuestions.addLast("Pop Question " + i);
       scienceQuestions.addLast(("Science Question " + i));
       sportsQuestions.addLast(("Sports Question " + i));
@@ -63,13 +68,13 @@ public class Game {
 
 	private void askQuestion() {
 		if (currentCategory() == "Pop")
-			System.out.println(popQuestions.removeFirst());
+			outputStream.println(popQuestions.removeFirst());
 		if (currentCategory() == "Science")
-			System.out.println(scienceQuestions.removeFirst());
+			outputStream.println(scienceQuestions.removeFirst());
 		if (currentCategory() == "Sports")
-			System.out.println(sportsQuestions.removeFirst());
+			outputStream.println(sportsQuestions.removeFirst());
 		if (currentCategory() == "Rock")
-			System.out.println(rockQuestions.removeFirst());
+			outputStream.println(rockQuestions.removeFirst());
 	}
 
 	private String currentCategory() {
@@ -90,32 +95,39 @@ public class Game {
 			if (isGettingOutOfPenaltyBox) {
 				purses[currentPlayer]++;
 				boolean winner = didPlayerWin();
-				currentPlayer++;
-				if (currentPlayer == players.size()) currentPlayer = 0;
+				if (winner) {
+					outputStream.println("Winner = " + players.get(currentPlayer) + ", purses = " + purses[currentPlayer]);
+				}
+				nextPlayer();
 				return winner;
 			} else {
-				currentPlayer++;
-				if (currentPlayer == players.size()) currentPlayer = 0;
-				return true;
+				nextPlayer();
+				return false;
 			}
 		} else {
 			purses[currentPlayer]++;
 			boolean winner = didPlayerWin();
-			currentPlayer++;
-			if (currentPlayer == players.size()) currentPlayer = 0;
+			if (winner) {
+				outputStream.println("Winner = " + players.get(currentPlayer) + ", purses = " + purses[currentPlayer]);
+			}
+			nextPlayer();
 			return winner;
 		}
 	}
 
-	public boolean wrongAnswer(){
-		inPenaltyBox[currentPlayer] = true;
+	private void nextPlayer() {
 		currentPlayer++;
 		if (currentPlayer == players.size()) currentPlayer = 0;
-		return true;
+	}
+
+	public boolean wrongAnswer(){
+		inPenaltyBox[currentPlayer] = true;
+		nextPlayer();
+		return false;
 	}
 
 	private boolean didPlayerWin() {
-		return !(purses[currentPlayer] == 6);
+		return (purses[currentPlayer] == 6);
 	}
 }
 

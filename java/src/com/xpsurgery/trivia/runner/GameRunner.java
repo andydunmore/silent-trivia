@@ -5,10 +5,10 @@ import com.xpsurgery.trivia.uglytrivia.Game;
 
 public class GameRunner {
 
-	private static boolean notAWinner;
+	private static boolean winner;
 
 	public static void main(String[] args) {
-		Game aGame = new Game();
+		Game aGame = new Game(System.out);
 		aGame.add("Chet");
 		aGame.add("Pat");
 		aGame.add("Sue");
@@ -16,11 +16,11 @@ public class GameRunner {
 		do {
 			aGame.roll(rand.nextInt(5) + 1);
 			if (rand.nextInt(9) == 7) {
-				notAWinner = aGame.wrongAnswer();
+				winner = aGame.wrongAnswer();
 			} else {
-				notAWinner = aGame.wasCorrectlyAnswered();
+				winner = aGame.wasCorrectlyAnswered();
 			}
-		} while (notAWinner);
+		} while (!winner);
 	}
 
 }
